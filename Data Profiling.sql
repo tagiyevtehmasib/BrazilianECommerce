@@ -13,7 +13,8 @@ WHERE TABLE_CATALOG = 'CopyBrazilianECommerce'
 ORDER BY TABLE_NAME, ORDINAL_POSITION
 
 
---Is the number of rows the same as in the original table?
+-- The copy of original database created, with .bak file.
+-- Is the number of rows the same as in the original table?
 USE BrazilianECommerce
 
 SELECT COUNT(*) FROM category_names  -- 72
@@ -40,3 +41,17 @@ SELECT COUNT(*) FROM products        -- 32951
 SELECT COUNT(*) FROM sellers         -- 3095
 
 -- Yes, all the lines came in full.
+--=============================================================================
+
+SELECT order_id, 
+COUNT(*)
+FROM orders
+GROUP BY order_id
+HAVING COUNT(*) > 1
+
+SELECT COUNT(DISTINCT order_id) FROM orders
+
+SELECT order_purchase_timestamp
+FROM orders
+WHERE TRY_CONVERT(DATETIME, order_purchase_timestamp) IS NULL
+		AND order_purchase_timestamp IS NOT NULL
