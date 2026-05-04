@@ -43,15 +43,34 @@ SELECT COUNT(*) FROM sellers         -- 3095
 -- Yes, all the lines came in full.
 --=============================================================================
 
-SELECT order_id, 
-COUNT(*)
-FROM orders
-GROUP BY order_id
-HAVING COUNT(*) > 1
+SELECT COUNT(*) FROM category_names
+WHERE column1 IS NOT NULL OR column1 IS NULL OR  column2 IS NOT NULL OR column2 IS NULL
 
-SELECT COUNT(DISTINCT order_id) FROM orders
+SELECT * FROM customers
+SELECT * FROM geolocations
+SELECT * FROM order_items
+SELECT * FROM order_payments
+SELECT * FROM order_reviews
+SELECT * FROM orders
+SELECT * FROM products
+SELECT * FROM sellers
 
-SELECT order_purchase_timestamp
-FROM orders
-WHERE TRY_CONVERT(DATETIME, order_purchase_timestamp) IS NULL
-		AND order_purchase_timestamp IS NOT NULL
+
+
+SELECT * FROM order_items
+WHERE order_id = '0008288aa423d2a3f00fcb17cd7d8719'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
