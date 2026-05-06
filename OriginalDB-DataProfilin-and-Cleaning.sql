@@ -43,11 +43,10 @@ SELECT COUNT(*) FROM sellers         -- 3095
 -- Yes, all the lines came in full.
 --=============================================================================
 
-SELECT COUNT(*) FROM category_names
-WHERE column1 IS NOT NULL OR column1 IS NULL OR  column2 IS NOT NULL OR column2 IS NULL
 
---=============================================================================
--- DATA CLEANING
+-- DATA CLEANING PROCESS
+
+--=========================================CATEGORY_NAMES TABLE==============================================================
 -- Appoint the column names.
 
 SELECT * FROM category_names
@@ -57,4 +56,67 @@ EXEC sp_rename 'category_names.column2', 'category_english'
 
 --Delete the first row, because previous column names were there.
 DELETE FROM category_names
-WHERE category_portugal = 'product_category_name'
+WHERE category_portuglar = 'product_category_name'
+
+-- Make upper letter the first character of category_names.
+UPDATE category_names SET category_portugal = LTRIM(category_portugal)
+UPDATE category_names SET category_portugal = CONCAT(UPPER(LEFT(category_portugal, 1)), SUBSTRING(category_portugal, 2, LEN(category_portugal)))
+
+UPDATE category_names SET category_english = LTRIM(category_english)
+UPDATE category_names SET category_english = CONCAT(UPPER(LEFT(category_english, 1)), SUBSTRING(category_english, 2, LEN(category_english)))
+
+-- Add ID (with auto-increament) column.
+ALTER TABLE category_names 
+ADD category_ID INT IDENTITY(1,1)
+
+-- Add PK to category_ID.
+ALTER TABLE category_names
+ADD CONSTRAINT PK_category_ID PRIMARY KEY (category_ID)
+
+--=========================================PRODUCT==============================================================
+-- We will clean and arrange Product table, because there is Category NAme in here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
