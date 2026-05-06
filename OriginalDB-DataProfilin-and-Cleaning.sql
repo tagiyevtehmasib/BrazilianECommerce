@@ -56,7 +56,7 @@ EXEC sp_rename 'category_names.column2', 'category_english'
 
 --Delete the first row, because previous column names were there.
 DELETE FROM category_names
-WHERE category_portuglar = 'product_category_name'
+WHERE category_portugal = 'product_category_name'
 
 -- Make upper letter the first character of category_names.
 UPDATE category_names SET category_portugal = LTRIM(category_portugal)
@@ -75,6 +75,68 @@ ADD CONSTRAINT PK_category_ID PRIMARY KEY (category_ID)
 
 --=========================================PRODUCT==============================================================
 -- We will clean and arrange Product table, because there is Category NAme in here
+
+-- Add category_ID column to Product Table.
+ALTER TABLE products ADD category_ID INT
+
+-- Add match data from Category Table.
+UPDATE p SET p.category_ID = c.category_ID
+FROM products p 
+JOIN category_names c 
+ON c.category_portugal = p.product_category_name
+
+-- Add FK to category_ID column in the Product Table.
+ALTER TABLE products ADD CONSTRAINT
+FK_Product_Category FOREIGN KEY (category_ID)
+REFERENCES category_names (category_ID)
+
+-- These don't exist at all, but they are in the product table.
+SELECT * FROM products WHERE product_category_name IS NOT NULL AND category_ID IS NULL
+
+-- We add them to the category table.
+INSERT INTO category_names (category_portugal) VALUES
+('pc_gamer'),
+('portateis_cozinha_e_preparadores_de_alimentos')
+
+
+-- And then bring them into the same format as the others.
+UPDATE category_names SET category_portugal = LTRIM(category_portugal) 
+WHERE category_ID IN(72, 73)
+UPDATE category_names SET category_portugal = CONCAT(UPPER(LEFT(category_portugal, 1)), SUBSTRING(category_portugal, 2, LEN(category_portugal))) 
+WHERE category_ID IN(72, 73)
+
+-- And finally, we add their IDs to the product table.
+UPDATE p SET p.category_ID = c.category_ID
+FROM products p 
+JOIN category_names c 
+ON c.category_portugal = p.product_category_name
+WHERE p.product_category_name IS NOT NULL AND p.category_ID IS NULL
+--(13 rows affected)
+
+-- Delete product_category_name Column, because there is already category_ID column.
+ALTER TABLE products
+DROP COLUMN product_category_name
+
+-- Add PK to product_id, because for relation.
+ALTER TABLE products ADD CONSTRAINT 
+PK_Product_ID PRIMARY KEY (product_id)
+
+--=========================================Indi hansi Table?==============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
