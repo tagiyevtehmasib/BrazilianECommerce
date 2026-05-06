@@ -73,7 +73,7 @@ ADD category_ID INT IDENTITY(1,1)
 ALTER TABLE category_names
 ADD CONSTRAINT PK_category_ID PRIMARY KEY (category_ID)
 
---=========================================PRODUCT==============================================================
+--=========================================PRODUCTS TABLE=======================================================================
 -- We will clean and arrange Product table, because there is Category NAme in here
 
 -- Add category_ID column to Product Table.
