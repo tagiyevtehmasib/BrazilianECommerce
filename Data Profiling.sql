@@ -54,11 +54,8 @@ SELECT * FROM order_reviews
 SELECT * FROM orders
 SELECT * FROM products
 SELECT * FROM sellers
+SELECT * FROM category_names
 
-
-
-SELECT * FROM order_items
-WHERE order_id = '0008288aa423d2a3f00fcb17cd7d8719'
 
 
 
