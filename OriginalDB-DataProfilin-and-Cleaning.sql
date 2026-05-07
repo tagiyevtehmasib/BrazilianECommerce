@@ -171,6 +171,30 @@ FK_Order_ID FOREIGN KEY (order_id)
 REFERENCES orders (order_id)
 
 --=========================================REVIEWS TABLE==============================================================
+-- In this table, change the data types in the date columns and add FK constraint to order_id.
+SELECT * FROM order_reviews
+
+ALTER TABLE order_reviews ALTER COLUMN
+order_id NVARCHAR(50) NOT NULL
+
+ALTER TABLE order_reviews ADD CONSTRAINT
+FK_OrderReview_ID FOREIGN KEY (order_id) 
+REFERENCES orders (order_id)
+
+-- Convert the data type of "review_creation_date", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(review_creation_date AS DATETIME2(0)) FROM order_reviews
+
+ALTER TABLE order_reviews ALTER COLUMN
+review_creation_date DATETIME2(0)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(review_answer_timestamp AS DATETIME2(0)) FROM order_reviews
+
+ALTER TABLE order_reviews ALTER COLUMN
+review_answer_timestamp DATETIME2(0)
+
+
+--=========================================Indi hansi table ?==============================================================
 
 
 
