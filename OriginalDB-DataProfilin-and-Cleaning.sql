@@ -158,6 +158,19 @@ SELECT TRY_CAST(shipping_limit_date AS DATETIME2(0)) FROM order_items
 ALTER TABLE order_items ALTER COLUMN
 shipping_limit_date DATETIME2(0)
 
+SELECT * FROM order_items
+
+--=========================================PAYMENTS TABLE==============================================================
+-- First of all, before add the FK to order_id, we must add the not null constraint to order_id.
+
+ALTER TABLE order_payments ALTER COLUMN
+order_id NVARCHAR(50) NOT NULL
+
+ALTER TABLE order_payments ADD CONSTRAINT
+FK_Order_ID FOREIGN KEY (order_id)
+REFERENCES orders (order_id)
+
+--=========================================REVIEWS TABLE==============================================================
 
 
 
