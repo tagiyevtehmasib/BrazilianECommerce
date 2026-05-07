@@ -121,8 +121,36 @@ DROP COLUMN product_category_name
 ALTER TABLE products ADD CONSTRAINT 
 PK_Product_ID PRIMARY KEY (product_id)
 
---=========================================Indi hansi Table?==============================================================
 
+--=========================================ORDERS ITEMS TABLE==============================================================
+-- Change the false data types.
+
+-- Make the relations with orders table, products table and sellers table.
+
+-- Give the PK to seller_id in the sellers table.
+ALTER TABLE sellers ADD CONSTRAINT
+PK_Seller_ID PRIMARY KEY (seller_id)
+
+-- Give the PK to order_id in the orders table.
+ALTER TABLE orders ADD CONSTRAINT
+PK_Order_ID PRIMARY KEY (order_id)
+
+-- Give the PK to product_id in the products table.
+ALTER TABLE products ADD CONSTRAINT
+PK_Product_ID PRIMARY KEY (product_id)
+
+-- Now, make the many_to_many relation, our middle table is order_items table.
+ALTER TABLE order_items ADD CONSTRAINT
+FK_Orders_Items FOREIGN KEY (order_id)
+REFERENCES orders (order_id)
+
+ALTER TABLE order_items ADD CONSTRAINT
+FK_Sellers_Items FOREIGN KEY (seller_id)
+REFERENCES sellers (seller_id)
+
+ALTER TABLE order_items ADD CONSTRAINT
+FK_Products_Items FOREIGN KEY (product_id)
+REFERENCES products (product_id)
 
 
 
