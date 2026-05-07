@@ -152,6 +152,11 @@ ALTER TABLE order_items ADD CONSTRAINT
 FK_Products_Items FOREIGN KEY (product_id)
 REFERENCES products (product_id)
 
+-- Convert the data type of "shipping_limit_date", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(shipping_limit_date AS DATETIME2(0)) FROM order_items
+
+ALTER TABLE order_items ALTER COLUMN
+shipping_limit_date DATETIME2(0)
 
 
 
