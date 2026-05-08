@@ -193,12 +193,20 @@ SELECT TRY_CAST(review_answer_timestamp AS DATETIME2(0)) FROM order_reviews
 ALTER TABLE order_reviews ALTER COLUMN
 review_answer_timestamp DATETIME2(0)
 
+--=========================================SELLERS TABLE==============================================================
+-- Seller_id was done PK in advance.
 
---=========================================Indi hansi table ?==============================================================
+-- Change with uppper letter Seller's city initial.
+SELECT * FROM sellers
 
+UPDATE sellers SET seller_city = LTRIM(seller_city)
+UPDATE sellers SET seller_city = RTRIM(seller_city)
 
+UPDATE sellers SET seller_city = CONCAT(UPPER(LEFT(seller_city, 1)),SUBSTRING(seller_city, 2, LEN(seller_city)))
 
+-- Now, Do unique the geolocation_zip_code_prefix column in Geolocation Table. And then Connect with Sellers and Customers table.
 
+--================================================CUSTOMERS TABLE==========================================================
 
 
 
