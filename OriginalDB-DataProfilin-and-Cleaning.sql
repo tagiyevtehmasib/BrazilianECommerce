@@ -208,6 +208,55 @@ UPDATE sellers SET seller_city = CONCAT(UPPER(LEFT(seller_city, 1)),SUBSTRING(se
 
 --================================================CUSTOMERS TABLE==========================================================
 
+-- Add Pk to customer_id.
+SELECT * FROM customers
+
+ALTER TABLE customers ADD CONSTRAINT
+PK_Customer_ID PRIMARY KEY (customer_id)
+
+-- Now, Do unique the geolocation_zip_code_prefix column in Geolocation Table. And then Connect with Customers table.
+
+--================================================ORDERS TABLE==========================================================
+
+-- Add Not NULL constraint to customer_id.
+ALTER TABLE orders ALTER COLUMN
+customer_id NVARCHAR(50) NOT NULL
+
+-- Add Unique constraint to customer_id.
+ALTER TABLE orders ADD CONSTRAINT
+UQ_Customer_ID UNIQUE (customer_id)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(order_purchase_timestamp AS DATETIME2(0)) FROM orders
+
+ALTER TABLE orders ALTER COLUMN
+order_purchase_timestamp DATETIME2(0)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(order_approved_at AS DATETIME2(0)) FROM orders
+
+ALTER TABLE orders ALTER COLUMN
+order_approved_at DATETIME2(0)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(order_delivered_carrier_date AS DATETIME2(0)) FROM orders
+
+ALTER TABLE orders ALTER COLUMN
+order_delivered_carrier_date DATETIME2(0)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(order_delivered_customer_date AS DATETIME2(0)) FROM orders
+
+ALTER TABLE orders ALTER COLUMN
+order_delivered_customer_date DATETIME2(0)
+
+-- Convert the data type of "review_answer_timestamp", use DATETIME2(0) instead of DATETIME2(7).
+SELECT TRY_CAST(order_estimated_delivery_date AS DATETIME2(0)) FROM orders
+
+ALTER TABLE orders ALTER COLUMN
+order_estimated_delivery_date DATETIME2(0)
+
+SELECT * FROM orders
 
 
 
