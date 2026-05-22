@@ -81,32 +81,61 @@ ORDER BY 2, 3
 
 
 
-SELECT s.product_id,
-s.order_year,
-s.order_month,
-s.total_revenue,
-LAG(s.total_revenue, 1) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year),
-s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year),
-CASE
-	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) > 0 THEN 'increasing'
-	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) < 0 THEN 'decreasing'
-	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) = 0 THEN 'stable'
-	ELSE NULL
-END
-FROM 
+WITH Volatility AS
 (
-	SELECT i.product_id,
-	YEAR(o.order_purchase_timestamp) AS order_year,
-	MONTH(o.order_purchase_timestamp) AS order_month,
-	SUM(i.price) AS total_revenue
-	FROM order_items i
-	JOIN orders o
-	ON i.order_id = o.order_id
-	WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp IS NOT NULL 
-	GROUP BY i.product_id,
-	YEAR(o.order_purchase_timestamp),
-	MONTH(o.order_purchase_timestamp)
-) AS s
+	SELECT s.product_id,
+	s.order_year,
+	s.order_month,
+	s.total_revenue,
+	LAG(s.total_revenue, 1) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year)  AS _lag,
+	s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) AS _conclusion,
+	CASE
+		WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) > 0 THEN 'increasing'
+		WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) < 0 THEN 'decreasing'
+		WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) = 0 THEN 'stable'
+		ELSE NULL
+	END AS _volatility
+	FROM 
+	(
+		SELECT i.product_id,
+		YEAR(o.order_purchase_timestamp) AS order_year,
+		MONTH(o.order_purchase_timestamp) AS order_month,
+		SUM(i.price) AS total_revenue
+		FROM order_items i
+		JOIN orders o
+		ON i.order_id = o.order_id
+		WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp IS NOT NULL 
+		GROUP BY i.product_id,
+		YEAR(o.order_purchase_timestamp),
+		MONTH(o.order_purchase_timestamp)
+	) AS s
+),
+voAnalyze AS
+(
+	SELECT product_id,
+	order_year,
+	_volatility,
+	COUNT(_volatility) AS total_volatility
+	FROM Volatility WHERE _volatility IS NOT NULL
+	GROUP BY product_id,
+	order_year,
+	_volatility
+),
+Rank_Analyze AS
+(
+	SELECT product_id,
+	order_year,
+	_volatility,
+	total_volatility,
+	ROW_NUMBER() OVER(PARTITION BY product_id, order_year ORDER BY total_volatility DESC) AS _raw
+	FROM voAnalyze
+)
+SELECT product_id,
+order_year,
+_volatility,
+total_volatility
+FROM Rank_Analyze WHERE _raw = 1 --AND product_id = '001b72dfd63e9833e8c02742adf472e3'
+ORDER BY 1, 2
 
 
 
