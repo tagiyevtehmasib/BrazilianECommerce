@@ -66,6 +66,47 @@ SELECT COUNT(*) FROM Above_Average_Revenue
 
 -- Analyze 2 : Top Selling Product Trend.
 
+SELECT i.product_id,
+YEAR(o.order_purchase_timestamp) AS order_year,
+MONTH(o.order_purchase_timestamp) AS order_month,
+SUM(i.price) AS total_revenue
+FROM order_items i
+JOIN orders o
+ON i.order_id = o.order_id
+WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp IS NOT NULL AND i.product_id = '00250175f79f584c14ab5cecd80553cd'
+GROUP BY i.product_id,
+YEAR(o.order_purchase_timestamp),
+MONTH(o.order_purchase_timestamp)
+ORDER BY 2, 3
+
+
+
+SELECT s.product_id,
+s.order_year,
+s.order_month,
+s.total_revenue,
+LAG(s.total_revenue, 1) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year),
+s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year),
+CASE
+	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) > 0 THEN 'increasing'
+	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) < 0 THEN 'decreasing'
+	WHEN s.total_revenue - LAG(s.total_revenue) OVER(PARTITION BY s.product_id ORDER BY s.product_id, s.order_year) = 0 THEN 'stable'
+	ELSE NULL
+END
+FROM 
+(
+	SELECT i.product_id,
+	YEAR(o.order_purchase_timestamp) AS order_year,
+	MONTH(o.order_purchase_timestamp) AS order_month,
+	SUM(i.price) AS total_revenue
+	FROM order_items i
+	JOIN orders o
+	ON i.order_id = o.order_id
+	WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp IS NOT NULL 
+	GROUP BY i.product_id,
+	YEAR(o.order_purchase_timestamp),
+	MONTH(o.order_purchase_timestamp)
+) AS s
 
 
 
