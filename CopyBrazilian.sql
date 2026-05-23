@@ -73,8 +73,6 @@ ADD category_ID INT IDENTITY(1,1)
 ALTER TABLE category_names
 ADD CONSTRAINT PK_category_ID PRIMARY KEY (category_ID)
 
-SELECT * FROM category_names
-
 UPDATE category_names SET category_english = 'Pc Gamer' WHERE category_ID = 72
 UPDATE category_names SET category_english = 'Porta Cozinha' WHERE category_ID = 73
 
@@ -125,6 +123,15 @@ DROP COLUMN product_category_name
 -- Add PK to product_id, because for relation.
 ALTER TABLE products ADD CONSTRAINT
 PK_Product_ID PRIMARY KEY (product_id)
+
+SELECT * FROM products 
+WHERE category_ID IS NULL
+
+
+UPDATE products SET category_ID = 73
+WHERE category_ID IS NULL
+
+SELECT * FROM category_names
 
 --=========================================ORDERS ITEMS TABLE==============================================================
 -- Change the false data types.
