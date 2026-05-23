@@ -73,6 +73,9 @@ ADD category_ID INT IDENTITY(1,1)
 ALTER TABLE category_names
 ADD CONSTRAINT PK_category_ID PRIMARY KEY (category_ID)
 
+UPDATE category_names SET category_english = 'Pc Gamer' WHERE category_ID = 72
+UPDATE category_names SET category_english = 'Porta Cozinha' WHERE category_ID = 73
+
 --=========================================PRODUCTS TABLE=======================================================================
 -- We will clean and arrange Product table, because there is Category NAme in here
 
@@ -121,6 +124,8 @@ DROP COLUMN product_category_name
 ALTER TABLE products ADD CONSTRAINT 
 PK_Product_ID PRIMARY KEY (product_id)
 
+UPDATE products SET category_ID = 73
+WHERE category_ID IS NULL
 
 --=========================================ORDERS ITEMS TABLE==============================================================
 -- Change the false data types.
@@ -256,7 +261,6 @@ SELECT TRY_CAST(order_estimated_delivery_date AS DATETIME2(0)) FROM orders
 ALTER TABLE orders ALTER COLUMN
 order_estimated_delivery_date DATETIME2(0)
 
-SELECT * FROM orders
 
 
 
