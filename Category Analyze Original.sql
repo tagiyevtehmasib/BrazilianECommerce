@@ -124,18 +124,36 @@ Satisfaction AS
 		WHEN (_can_have_delivered - _delivered) = 0 THEN 'normal'
 		WHEN (_can_have_delivered - _delivered) < 0 THEN 'bad'
 		WHEN (_can_have_delivered - _delivered) > 0 THEN 'good'
-		ELSE NULL
 	END AS _rank
 	FROM Delivered_Date
+),
+Advanced_Conclusion AS
+(
+	SELECT 
+		CASE
+			WHEN (_can_have_delivered - _delivered) = 0 THEN 'normal'
+			WHEN (_can_have_delivered - _delivered) < 0 THEN 'bad'
+			WHEN (_can_have_delivered - _delivered) > 0 THEN 'good'
+			ELSE NULL
+		END AS _rank,
+		_AvgScore
+	FROM Delivered_Date
 )
-SELECT d.order_id,
-d._delivered,
-d._can_have_delivered,
-d._AvgScore,
-s._rank
-FROM Delivered_Date d 
-JOIN Satisfaction s
-ON s.order_id = d.order_id
+SELECT _rank,
+_AvgScore,
+COUNT(*) AS _EndCount
+FROM Advanced_Conclusion
+GROUP BY _rank, _AvgScore
+ORDER BY 1, 2
+
+--SELECT d.order_id,
+--d._delivered,
+--d._can_have_delivered,
+--d._AvgScore,
+--s._rank
+--FROM Delivered_Date d 
+--JOIN Satisfaction s
+--ON s.order_id = d.order_id
 
 
 SELECT o.order_id FROM orders o WHERE o.order_status = 'delivered'
