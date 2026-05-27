@@ -2,7 +2,11 @@
 
 USE BrazilianECommerce
 
--- Top Revenue Generating Product Categories
+-- \      
+ --  \
+  --   Top Revenue Generating Product Categories
+ --  /
+-- /
 
 -- First Analyze : Identify the top 10 product categories that generate the highest revenue.
 
@@ -80,6 +84,50 @@ ON c.category_ID = o.category_ID
 JOIN Total_Revenue r
 ON c.category_english = r.category_english
 ORDER BY 1
+
+--========================================================================================
+--========================================================================================
+
+
+-- \      
+ --  \
+  --   Relationship Between Review Score and Delivery Time
+ --  /
+-- /
+
+-- First Analyze : Analyze whether there is a relationship between review score and delivery time.
+-- The questions of first anaylze \/
+
+-- o Use orders and reviews tables.
+-- o Delivery time can be calculated as the difference between order_delivered_customer_date and order_purchase_timestamp.
+-- o Join with reviews to get review_score.
+
+WITH Delivered_Date AS 
+(
+	SELECT o.order_id,
+	DATEDIFF(DAY, o.order_purchase_timestamp,o.order_delivered_customer_date) AS _delivered,
+	DATEDIFF(DAY, o.order_purchase_timestamp, o.order_estimated_delivery_date) AS _can_have_delivered,
+	AVG(r.review_score) AS _AvgScore
+	FROM order_reviews r
+	JOIN orders o
+	ON r.order_id = o.order_id
+	WHERE o.order_status = 'delivered' 
+	GROUP BY o.order_id,
+	DATEDIFF(DAY, o.order_purchase_timestamp,o.order_delivered_customer_date) ,
+	DATEDIFF(DAY, o.order_purchase_timestamp, o.order_estimated_delivery_date)
+
+)
+SELECT order_id,
+_delivered,
+_can_have_delivered,
+_AvgScore
+FROM Delivered_Date
+
+
+SELECT o.order_id FROM orders o WHERE o.order_status = 'delivered'
+AND o.order_id = ANY(SELECT r.order_id FROM order_reviews r)
+
+
 
 
 
