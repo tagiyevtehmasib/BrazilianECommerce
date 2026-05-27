@@ -116,12 +116,26 @@ WITH Delivered_Date AS
 	DATEDIFF(DAY, o.order_purchase_timestamp,o.order_delivered_customer_date) ,
 	DATEDIFF(DAY, o.order_purchase_timestamp, o.order_estimated_delivery_date)
 
+),
+Satisfaction AS 
+(
+	SELECT order_id,
+	CASE
+		WHEN (_can_have_delivered - _delivered) = 0 THEN 'normal'
+		WHEN (_can_have_delivered - _delivered) < 0 THEN 'bad'
+		WHEN (_can_have_delivered - _delivered) > 0 THEN 'good'
+		ELSE NULL
+	END AS _rank
+	FROM Delivered_Date
 )
-SELECT order_id,
-_delivered,
-_can_have_delivered,
-_AvgScore
-FROM Delivered_Date
+SELECT d.order_id,
+d._delivered,
+d._can_have_delivered,
+d._AvgScore,
+s._rank
+FROM Delivered_Date d 
+JOIN Satisfaction s
+ON s.order_id = d.order_id
 
 
 SELECT o.order_id FROM orders o WHERE o.order_status = 'delivered'
