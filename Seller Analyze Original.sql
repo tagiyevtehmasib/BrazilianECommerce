@@ -139,6 +139,56 @@ ORDER BY 1, 2
 
 
 
+--==============================================================================================================
+--==============================================================================================================
+
+
+
+/* 
+	Seller Concentration Analysis
+*/
+
+-- First Analyze : Identify the top 10 sellers by total revenue.
+-- Note : Revenue = price + freight_value.
+
+WITH Perfect_Seller AS
+(
+	SELECT seller_id,
+	SUM(price + freight_value) OVER(PARTITION BY seller_id ORDER BY (price + freight_value) DESC) AS _total_revenue
+	FROM order_items
+),
+Choose_One_Seller AS
+(
+	SELECT seller_id,
+	_total_revenue,
+	ROW_NUMBER() OVER(PARTITION BY seller_id ORDER BY _total_revenue DESC) AS _row
+	FROM Perfect_Seller
+),
+Top_Ten AS
+(
+	SELECT seller_id,
+	_total_revenue,
+	ROW_NUMBER() OVER(ORDER BY _total_revenue DESC) AS _Last_Choose
+	FROM Choose_One_Seller
+	WHERE _row = 1
+),
+General_Revenue AS
+(
+
+	SELECT SUM(wr.whole_revenue) AS wr_whole_revenue, 
+	(SELECT SUM(_total_revenue) AS total_ten_revenue FROM Top_Ten
+	WHERE _Last_Choose BETWEEN 1 AND 10) AS ten_seller
+	FROM 
+	(
+		SELECT SUM(price + freight_value) AS whole_revenue
+		FROM order_items
+		GROUP BY seller_id
+	) AS wr
+)
+SELECT wr_whole_revenue,
+ten_seller,
+ROUND(CAST(ten_seller AS FLOAT) / CAST(wr_whole_revenue AS FLOAT), 3) * 100 AS _percentage
+FROM General_Revenue
  
 
 
