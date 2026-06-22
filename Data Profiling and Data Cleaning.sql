@@ -262,7 +262,97 @@ ALTER TABLE orders ALTER COLUMN
 order_estimated_delivery_date DATETIME2(0)
 
 
+--================================================GEOLOCATIONS TABLE==========================================================
 
+-- Delete dublicate data with CTE from geolocation table.
+
+WITH Delete_Dublicate AS
+(
+	SELECT geolocation_zip_code_prefix,
+	geolocation_lat,
+	geolocation_lng,
+	geolocation_city,
+	geolocation_state,
+	ROW_NUMBER() OVER(
+		PARTITION BY geolocation_zip_code_prefix,
+					 geolocation_lat,
+					 geolocation_lng,
+					 geolocation_city,
+					 geolocation_state 
+		ORDER BY geolocation_zip_code_prefix,
+				 geolocation_lat,
+				 geolocation_lng,
+				 geolocation_city,
+				 geolocation_state) _dlDublicate
+	FROM geolocations
+) 
+DELETE FROM Delete_Dublicate
+WHERE _dlDublicate > 1
+
+-- (261948 rows affected) FROM 1000163
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(REPLACE(REPLACE(geolocation_city, 'α', 'a'), 'β', 'a'), 'γ', 'a')
+WHERE geolocation_city LIKE '%[αβγ]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(REPLACE(REPLACE(REPLACE(geolocation_city, '£', ''), '³', ''), '΄', ''), '.', '')
+WHERE geolocation_city LIKE '%[£³΄.]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(REPLACE(geolocation_city, 'ι', 'e'), 'κ', 'e')
+WHERE geolocation_city LIKE '%[ικ]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(geolocation_city, '`', '')
+WHERE geolocation_city LIKE '%[`]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(REPLACE(REPLACE(geolocation_city, 'τ', 'o'), 'σ', 'o'), 'υ', 'o')
+WHERE geolocation_city LIKE '%[τσυ]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(geolocation_city, 'η', 'c')
+WHERE geolocation_city LIKE '%[η]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(REPLACE(geolocation_city, 'ϊ', 'u'), 'ό', 'u')
+WHERE geolocation_city LIKE '%[ϊό]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(geolocation_city, 'ν', 'i')
+WHERE geolocation_city LIKE '%[ν]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(geolocation_city, '* ', '')
+WHERE geolocation_city LIKE '%[* ]%'
+
+UPDATE geolocations 
+SET geolocation_city = REPLACE(geolocation_city, '%26apos%3', '')
+WHERE geolocation_city LIKE '%26apos%'
+
+WITH Second_Dublicate AS
+(
+	SELECT geolocation_zip_code_prefix,
+	geolocation_lat,
+	geolocation_lng,
+	geolocation_city,
+	geolocation_state,
+	ROW_NUMBER() OVER(PARTITION BY geolocation_zip_code_prefix,
+	geolocation_lat,
+	geolocation_lng,
+	geolocation_city,
+	geolocation_state ORDER BY geolocation_zip_code_prefix,
+	geolocation_lat,
+	geolocation_lng,
+	geolocation_city,
+	geolocation_state) scnd_dublicate
+	FROM geolocations
+)
+DELETE FROM Second_Dublicate
+WHERE scnd_dublicate > 1
+
+SELECT * FROM geolocations
 
 
 
